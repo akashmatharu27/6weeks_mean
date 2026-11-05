@@ -25,6 +25,9 @@ jobs:
             git pull origin main
             sudo npm install
             sudo npm run build
-            cd dist/bicycle
-            pm2 start http-server --name "frontend" -- -p 4200 -d false
+            
+            pm2 delete frontend || true
+            
+            pm2 serve dist/front-end 4200 --name "frontend" --spa
+            
             pm2 save
