@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Deploy to Azure VM
+        uses: appleboy/ssh-action@v1.2.0
+        
+        with:
+          host: ${{ secrets.IP }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PEM_KEY }}
+          
+          script: |
+            cd /home/ubuntu/6weeks_mean
+            git pull origin main
+            sudo npm install
+            sudo npm run build
+            cd dist/bicycle
+            pm2 start http-server --name "frontend" -- -p 4200 -d false
+            pm2 save
